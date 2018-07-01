@@ -8,7 +8,7 @@ class Member(models.Model):
     name = models.CharField(max_length=16)
 
 class Saying(models.Model):
-    member = models.ForeignKey(Member, on_delete = models.CASCADE)
+    writer = models.ForeignKey(Member, on_delete = models.CASCADE)
     contents = models.CharField(max_length = 200)
 
 class Like(models.Model):

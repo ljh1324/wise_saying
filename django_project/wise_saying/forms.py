@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Member
+from .models import Member, Saying
 
 class MemberForm(forms.ModelForm):
     class Meta:
@@ -46,3 +46,21 @@ class MemberLoginForm(forms.ModelForm):
         super(MemberLoginForm, self).__init__( *args, **kwargs)
         self.fields['member_id'].widget.attrs['maxlength'] = 15
         self.fields['password'].widget.attrs['maxlength'] = 40
+
+
+class SayingForm(forms.ModelForm):
+    class Meta:
+        model = Saying
+        fields = ('contents', )
+        widgets = {
+            'contents': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'200자 이내'}),
+        }
+
+        labels = {
+            'contents': '내용',
+        }
+
+    # 글자수 제한
+    def __init__(self, *args, **kwargs):
+        super(SayingForm, self).__init__( *args, **kwargs)
+        self.fields['contents'].widget.attrs['maxlength'] = 200

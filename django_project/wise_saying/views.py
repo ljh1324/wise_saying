@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .forms import MemberForm, MemberLoginForm
+from .forms import MemberForm, MemberLoginForm, SayingForm
 from django.shortcuts import redirect
-from wise_saying.models import Member
+from wise_saying.models import Member, Saying
 
 # Create your views here.
 def main(request):
@@ -51,6 +51,37 @@ def register(request):
 def home(request):
     if not request.session.has_key('member_id'):
         return redirect('login')
+
     member_id = request.session['member_id']
     return render(request, 'wise_saying/home.html', {'member_id':member_id})
+
+
+def post_new(request):
+    if not request.session.has_key('member_id'):
+        return redirect('login')
+
+    if request.method == "POST":
+        form = SayingForm(request.POST)
+        
+        if form.is_valid():
+            saying = form.save(commit=False)
+            member = Member.objects.get(member_id=request.session['member_id'])
+            saying.writer = member
+            saying.save()
+            return redirect('home')
+            
+    form = SayingForm()
+    return render(request, 'wise_saying/register.html', {'form': form})
+
+
+def my_post(request):
+    if not request.session.has_key('member_id'):
+        return redirect('login')
+    
+    member = Member.objects.get(member_id=request.session['member_id'])
+    saying_list = Saying.objects.filter(writer=member)
+
+    return render(request, 'wise_saying/my_post.html', {'saying_list': saying_list})
+
+
 
