@@ -4,8 +4,8 @@ from django.db import models
 
 class Member(models.Model):
     member_id = models.CharField(max_length=20)
-    member_password = models.CharField(max_length=40)
-    member_name = models.CharField(max_length=16)
+    password = models.CharField(max_length=40)
+    name = models.CharField(max_length=16)
 
 class Saying(models.Model):
     member = models.ForeignKey(Member, on_delete = models.CASCADE)
