@@ -37,6 +37,10 @@ def login(request):
     form = MemberLoginForm()
     return render(request, 'wise_saying/login.html', {'form': form})
 
+def logout(request):
+    request.session.flush()
+    return redirect('main')
+
 def register(request):
     if request.method == "POST":
         form = MemberForm(request.POST)
