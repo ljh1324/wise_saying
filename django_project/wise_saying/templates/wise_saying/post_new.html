@@ -1,0 +1,6 @@
+<h1>New Post</h1>
+<form method="POST" class="post-form">{% csrf_token %}
+    <!-- form.as_p는 각각의 폼 필드와 라벨을 함께 문단(역자 주: paragraph, 즉 <p> 태그)으로 감싸서 출력합니다. -->
+    {{ form.as_p }}
+    <button type="submit">확인</button>
+</form>

@@ -1,13 +1,15 @@
 from django.shortcuts import render
 from .forms import MemberForm, MemberLoginForm, SayingForm
 from django.shortcuts import redirect
-from wise_saying.models import Member, Saying
+from wise_saying.models import Member, Saying, Like
 
 # Create your views here.
-def main(request):
+def main(request):  # 메인
+    if request.session.has_key('member_id'):
+        return redirect('home')
     return render(request, 'wise_saying/main.html', {})
 
-def login(request):
+def login(request): # 로그인
     if request.method == "POST":
         form = MemberLoginForm(request.POST)
         #print("test2")
@@ -37,11 +39,11 @@ def login(request):
     form = MemberLoginForm()
     return render(request, 'wise_saying/login.html', {'form': form})
 
-def logout(request):
+def logout(request): # 로그아웃
     request.session.flush()
     return redirect('main')
 
-def register(request):
+def register(request): # 회원 가입
     if request.method == "POST":
         form = MemberForm(request.POST)
         if form.is_valid():
@@ -52,7 +54,7 @@ def register(request):
     return render(request, 'wise_saying/register.html', {'form': form})
 
 
-def home(request):
+def home(request): # 로그인 후 홈
     if not request.session.has_key('member_id'):
         return redirect('login')
 
@@ -60,7 +62,29 @@ def home(request):
     return render(request, 'wise_saying/home.html', {'member_id':member_id})
 
 
-def post_new(request):
+def post(request): # 명언 보기
+    if not request.session.has_key('member_id'):
+        return redirect('login')
+
+    member = Member.objects.get(member_id=request.session['member_id'])
+
+    saying = Saying.objects.order_by('?').first() # 랜덤으로 섞은것 중에 첫번째 아이템을 가져옴
+    writer = saying.writer
+    
+    is_like = False
+    try:
+        liked = Like.objects.get(member=member)
+        is_like = True
+    except Like.DoesNotExist:
+        is_like = False
+
+    contents = saying.contents
+    writer_name = member.name
+        
+    return render(request, 'wise_saying/post.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like})
+
+
+def post_new(request): # 명언 작성
     if not request.session.has_key('member_id'):
         return redirect('login')
 
@@ -75,17 +99,17 @@ def post_new(request):
             return redirect('home')
             
     form = SayingForm()
-    return render(request, 'wise_saying/register.html', {'form': form})
+    return render(request, 'wise_saying/post_new.html', {'form': form})
 
 
-def my_post(request):
+def post_me(request): # 내가 작성한 명언
     if not request.session.has_key('member_id'):
         return redirect('login')
     
     member = Member.objects.get(member_id=request.session['member_id'])
     saying_list = Saying.objects.filter(writer=member)
 
-    return render(request, 'wise_saying/my_post.html', {'saying_list': saying_list})
+    return render(request, 'wise_saying/post_me.html', {'saying_list': saying_list})
 
 
 
