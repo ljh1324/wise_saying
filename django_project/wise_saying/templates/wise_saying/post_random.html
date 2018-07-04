@@ -9,7 +9,7 @@
         $("#like").on('click', function() {
             jQuery.ajax({
                 type: "POST",
-                data: {saying_id : '{{saying_id}}',
+                data: {saying_id : '{{saying_id}}',  // 'like' url 호출시 데이터로 saying_id, is_like를 건네줌
                 is_like: is_like,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
                 },

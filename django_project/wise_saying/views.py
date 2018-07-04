@@ -3,8 +3,7 @@ from .forms import MemberForm, MemberLoginForm, SayingForm
 from django.shortcuts import redirect
 from wise_saying.models import Member, Saying, Like
 from django.http import HttpResponse
-
-import json
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 def main(request):  # 메인
@@ -65,7 +64,7 @@ def home(request): # 로그인 후 홈
     return render(request, 'wise_saying/home.html', {'member_id':member_id})
 
 
-def post(request): # 명언 보기
+def post_random(request): # 명언 보기
     if not request.session.has_key('member_id'):
         return redirect('login')
 
@@ -82,11 +81,11 @@ def post(request): # 명언 보기
         is_like = False
 
     contents = saying.contents
-    writer_name = member.name
+    writer_name = writer.name
         
     #return render(request, 'wise_saying/post.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like})
     saying_id = saying.id
-    return render(request, 'wise_saying/post.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like, 'saying_id':saying_id})
+    return render(request, 'wise_saying/post_random.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like, 'saying_id':saying_id})
 
 
 def post_new(request): # 명언 작성
@@ -142,20 +141,41 @@ def post_like(request): # 내가 작성한 명언
     print(saying_list)
     return render(request, 'wise_saying/post_like.html', {'saying_list': saying_list})
 
+def post_detail(request, pk):
+    if not request.session.has_key('member_id'):
+        return redirect('login')
+    
+    member = Member.objects.get(member_id=request.session['member_id'])
+
+    #saying = Saying.objects.get(id=pk)
+    saying = get_object_or_404(Saying, pk=pk)
+    
+    writer = saying.writer
+    
+    is_like = False
+    try:
+        like = Like.objects.get(member=member, saying=saying)
+        is_like = True
+    except Like.DoesNotExist:
+        is_like = False
+
+    contents = saying.contents
+    writer_name = writer.name
+        
+    #return render(request, 'wise_saying/post.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like})
+    saying_id = saying.id
+    return render(request, 'wise_saying/post_detail.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like, 'saying_id':saying_id})
+
 
 # Create your views here.
 def like(request):
     if request.method == 'POST' and request.is_ajax():
-        saying_id = request.POST.get('saying_id', None)
+        saying_id = request.POST.get('saying_id', None)  # ajax로 건네준 saying_id, is_like를 변수에 저장
         is_like = request.POST.get('is_like', None)
 
-        print(saying_id)
-        print(is_like)
-
         is_like = (is_like == 'true')
-        print(is_like)
 
-        if is_like:
+        if is_like:  # is_like가 참일 경우 이미 좋아 하는 경우이므로 Like models에서 삭제
             member = Member.objects.get(member_id=request.session['member_id'])
             saying = Saying.objects.get(id=saying_id)
             try:
