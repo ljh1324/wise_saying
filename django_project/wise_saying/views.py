@@ -76,7 +76,7 @@ def post(request): # 명언 보기
     
     is_like = False
     try:
-        like = Like.objects.get(member=member)
+        like = Like.objects.get(member=member, saying=saying)
         is_like = True
     except Like.DoesNotExist:
         is_like = False
