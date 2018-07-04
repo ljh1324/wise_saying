@@ -2,6 +2,9 @@ from django.shortcuts import render
 from .forms import MemberForm, MemberLoginForm, SayingForm
 from django.shortcuts import redirect
 from wise_saying.models import Member, Saying, Like
+from django.http import HttpResponse
+
+import json
 
 # Create your views here.
 def main(request):  # 메인
@@ -73,7 +76,7 @@ def post(request): # 명언 보기
     
     is_like = False
     try:
-        liked = Like.objects.get(member=member)
+        like = Like.objects.get(member=member)
         is_like = True
     except Like.DoesNotExist:
         is_like = False
@@ -81,7 +84,9 @@ def post(request): # 명언 보기
     contents = saying.contents
     writer_name = member.name
         
-    return render(request, 'wise_saying/post.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like})
+    #return render(request, 'wise_saying/post.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like})
+    saying_id = saying.id
+    return render(request, 'wise_saying/post.html', {'contents': contents, 'writer_name': writer_name, 'is_like':is_like, 'saying_id':saying_id})
 
 
 def post_new(request): # 명언 작성
@@ -112,4 +117,33 @@ def post_me(request): # 내가 작성한 명언
     return render(request, 'wise_saying/post_me.html', {'saying_list': saying_list})
 
 
+# Create your views here.
+def like(request):
+    if request.method == 'POST' and request.is_ajax():
+        saying_id = request.POST.get('saying_id', None)
+        is_like = request.POST.get('is_like', None)
 
+        print(saying_id)
+        print(is_like)
+
+        is_like = (is_like == 'true')
+        print(is_like)
+
+        if is_like:
+            member = Member.objects.get(member_id=request.session['member_id'])
+            saying = Saying.objects.get(id=saying_id)
+            try:
+                like = Like.objects.get(member=member, saying=saying)
+                like.delete()
+            except Like.DoesNotExist:
+                pass
+        else:
+            member = Member.objects.get(member_id=request.session['member_id'])
+            saying = Saying.objects.get(id=saying_id)
+            like = Like(member=member, saying=saying)
+            like.save()
+
+        return HttpResponse("Success")
+
+    else:
+        return redirect('home')

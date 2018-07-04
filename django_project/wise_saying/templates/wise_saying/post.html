@@ -1,12 +1,48 @@
+{% extends 'wise_saying/base.html' %}
+{% block content %}
 
-{{ writer_name }}
-{{ contents }}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        is_like = '{{is_like|yesno:"true,false"}}'
+        is_like = (is_like == 'true')
 
-{% if is_like %}
-  <button>싫어오</button>
-{% else %}
-  <button>좋아요</button>
-{% endif %}
+        $("#like").on('click', function() {
+            jQuery.ajax({
+                type: "POST",
+                data: {saying_id : '{{saying_id}}',
+                is_like: is_like,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                url: "like",
+                success: function(data) {
+                    console.log(is_like)
+                    if (is_like) {
+                        $('#like').html('싫어요')
+                        is_like = false
+                    }
+                    else {
+                        $('#like').html('좋아요')
+                        is_like = true
+                    }
+                },
+            });
+            return false;
+        });
+    });
+    </script>
 
-<a href='/post'>다음</a>
-<a href='/home'>홈</a>
+    {{ writer_name }}
+    {{ contents }}
+
+    {% if is_like %}
+        <button id='like'>싫어요</button>
+    {% else %}
+        <button id='like'>좋아요</button>
+    {% endif %}
+
+    {{ is_like|default:True }}
+
+    <a href='/post'>다음</a>
+    <a href='/home'>홈</a>
+
+{% endblock %}
