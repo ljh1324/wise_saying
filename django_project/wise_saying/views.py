@@ -113,8 +113,34 @@ def post_me(request): # 내가 작성한 명언
     
     member = Member.objects.get(member_id=request.session['member_id'])
     saying_list = Saying.objects.filter(writer=member)
-
+    #saying_list = Saying.objects.select_related().filter(writer=request.session['member_id'])  오직 아이디 값으로만 접근 가능 writer=id
+    print(saying_list)
     return render(request, 'wise_saying/post_me.html', {'saying_list': saying_list})
+
+
+def post_like(request): # 내가 작성한 명언
+    if not request.session.has_key('member_id'):
+        return redirect('login')
+    
+    member = Member.objects.get(member_id=request.session['member_id'])
+    #like_list = Like.objects.filter(member=member)
+    '''
+    like_list = Like.objects.filter(member=member).values('saying')
+    saying_list = []
+    print(saying_list)
+    for like in like_list:
+        saying_id = like['saying']
+        saying = Saying.objects.get(id=saying_id)
+        saying_list.append(saying)
+    print(saying_list)
+    '''
+    #saying_list = Saying.objects.filter(member=member).values('saying__contents')
+
+    like_list = Like.objects.filter(member=member).values('saying')
+    saying_list = Saying.objects.filter(id__in=like_list)
+
+    print(saying_list)
+    return render(request, 'wise_saying/post_like.html', {'saying_list': saying_list})
 
 
 # Create your views here.
