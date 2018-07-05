@@ -1,25 +1,25 @@
 {% load staticfiles %}
+
 <html>
   <head>
     <title>명언 노트</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/wise_saying.css' %}">
   </head>
   <body>
-    <div class="page-header">
-      <h1><a href="/">명언 노트</a></h1>
+    <div>
+      <h1 align='center'><a href="/">명언 노트</a></h1>
+      <div align='center'>
+        <a href='/post/random'> 명언 보기 </a>|<a href='/post/new'> 명언 쓰기 </a>|<a href='/post/me'> 내가 쓴 명언 </a>|<a href='/post/like'> 좋아요 한 명언 </a>
+      </div>
     </div>
 
-    <div class="content container">
-      <div class="row">
-        <div class="col-md-8">
-          {% block content %}
-          {% endblock %}
-        </div>
-      </div>
+    <div>
+      {% block content %}
+      {% endblock %}
     </div>
 </body>
 </html>

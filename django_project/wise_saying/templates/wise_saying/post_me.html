@@ -1,3 +1,7 @@
-{% for saying in saying_list %}
-    <li><a href="{% url 'post_detail' pk=saying.id %}">{{ saying.contents }}</a></li>
-{% endfor %}
+{% extends 'wise_saying/base.html' %}
+{% block content %}
+    {% for saying in saying_list %}
+        <br>
+        <li><a href="{% url 'post_detail' pk=saying.id %}">{{ saying.contents }}</a></li>
+    {% endfor %}
+{% endblock %}

@@ -1,6 +1,5 @@
 {% extends 'wise_saying/base.html' %}
 {% block content %}
-
     <script type="text/javascript">
     $(document).ready(function() {
         is_like = '{{is_like|yesno:"true,false"}}'
@@ -13,7 +12,7 @@
                 is_like: is_like,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
                 },
-                url: "like",
+                url: "/like",
                 success: function(data) {
                     console.log(is_like)
                     if (is_like) {
@@ -30,19 +29,17 @@
         });
     });
     </script>
-
-    {{ writer_name }}
-    {{ contents }}
+    
+    <br>
+    <p>작성자 : {{ writer_name }}</p>
+    <div class="postit">
+        <p>{{ contents }}</p>
+    </div>
 
     {% if is_like %}
-        <button id='like'>싫어요</button>
+        <center><button id='like' class='btn btn-default'>좋아요 취소</button></center>
     {% else %}
-        <button id='like'>좋아요</button>
+        <center><button id='like' class='btn btn-default'>좋아요</button></center>
     {% endif %}
-
-    {{ is_like|default:True }}
-
-    <a href='/post'>다음</a>
-    <a href='/home'>홈</a>
-
+    <h5 align='center'><a href='/post/random'>다음</a></h5>
 {% endblock %}
