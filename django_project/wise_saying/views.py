@@ -12,6 +12,9 @@ def main(request):  # 메인
     return render(request, 'wise_saying/main.html', {})
 
 def login(request): # 로그인
+    if request.session.has_key('member_id'):
+        return redirect('/home')
+        
     if request.method == "POST":
         form = MemberLoginForm(request.POST)
         #print("test2")
@@ -46,6 +49,9 @@ def logout(request): # 로그아웃
     return redirect('/')
 
 def register(request): # 회원 가입
+    if request.session.has_key('member_id'):
+        return redirect('/home')
+
     if request.method == "POST":
         form = MemberForm(request.POST)
         if form.is_valid():
