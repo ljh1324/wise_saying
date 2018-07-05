@@ -1,5 +1,5 @@
-# ΈνΎπ ³λΖ® Project
+# λª…μ–Έ λ…ΈνΈ Project
 
-* CSS ΖΔΐΟ ΓβΓ³
+* CSS νμΌ μ¶μ²
 
   * [Alex Krasny](https://mentormate.com/blog/css-postit-note/)
